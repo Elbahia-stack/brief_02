@@ -13,19 +13,18 @@ def df():
 def test_data_format_and_shape(df):
 
     assert isinstance(df, pd.DataFrame), "La donnée importée n'est pas un DataFrame pandas"
-
-
     target_col = 'Delivery_Time_min'
     assert target_col in df.columns, f"La colonne cible {target_col} est manquante"
-
-
     X = df.drop(columns=[target_col])
     y = df[target_col]
     assert X.shape[0] == y.shape[0], "Le nombre de lignes de X et y ne correspond pas"
 
 
 def test_mae(df):
-    X_train, X_test, y_train, y_test = df
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
 
     # Définir modèles et paramètres
     rf = RandomForestRegressor(random_state=42)
