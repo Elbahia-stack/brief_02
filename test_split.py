@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
@@ -25,6 +25,17 @@ def test_mae(df):
     X = df.drop(columns=[target_col])
     y = df[target_col]
 
+
+    c_cols = df.select_dtypes(include=['object']).columns
+
+
+    encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
+    encoded = encoder.fit_transform(X[c_cols])
+    encoded_df = pd.DataFrame(encoded, columns=encoder.get_feature_names_out(c_cols))
+
+    # Fusionner et supprimer les anciennes colonnes
+    X = pd.concat([X.drop(columns=c_cols).reset_index(drop=True), encoded_df], axis=1)
+
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
     )
@@ -48,7 +59,7 @@ def test_mae(df):
     grid_rf = GridSearchCV(rf, param_grid_rf, cv=3, scoring='neg_mean_absolute_error', n_jobs=1)
     grid_svr = GridSearchCV(svr, param_grid_svr, cv=3, scoring='neg_mean_absolute_error', n_jobs=1)
 
-    # Fit
+
     grid_rf.fit(X_train, y_train)
     grid_svr.fit(X_train, y_train)
 
