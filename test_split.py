@@ -21,6 +21,9 @@ def test_data_format_and_shape(df):
 
 
 def test_mae(df):
+    target_col = 'Delivery_Time_min'
+    X = df.drop(columns=[target_col])
+    y = df[target_col]
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
@@ -54,7 +57,7 @@ def test_mae(df):
     mae_svr = mean_absolute_error(y_test, grid_svr.best_estimator_.predict(X_test))
 
     # Seuil
-    seuil = 10  # définis ton seuil
+    seuil = 10
 
     assert mae_rf <= seuil, f"MAE RandomForest trop élevée: {mae_rf} > {seuil}"
     assert mae_svr <= seuil, f"MAE SVR trop élevée: {mae_svr} > {seuil}"
