@@ -24,7 +24,9 @@ def qualite_data(p):
     df.duplicated().sum()
     return df
 def encoder_d(df):
-    c_cols = ['Distance_km', 'Preparation_Time_min', 'Courier_Experience_yrs']
+    c_cols = df.select_dtypes(include='object').columns
+    if len(c_cols) == 0:
+        return df
     encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
     encoded = encoder.fit_transform(df[c_cols])
     encoded_df = pd.DataFrame(encoded, columns=encoder.get_feature_names_out(c_cols))
@@ -35,7 +37,8 @@ def encoder_d(df):
     return df
 
 def scale_numeric(df):
-    features= ['Distance_km', 'Preparation_Time_min', 'Courier_Experience_yrs']
+    features = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
+    features.remove('Delivery_Time_min')
     scaler = StandardScaler()
     df[features] = scaler.fit_transform(df[features])
     return df
