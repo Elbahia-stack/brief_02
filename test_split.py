@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from piline import  qualite_data, encoder_d, scale_numeric, modelisation
+from piline import  qualite_data, encoder_d, scale_numeric, modelisation,split
 @pytest.fixture
 def data():
 
@@ -15,9 +15,10 @@ def test_mae(data):
     df = encoder_d(df)
     df = scale_numeric(df)
     target_col = 'Delivery_Time_min'
-    X = data.drop(columns=[target_col])
-    y = data[target_col]
-    results = modelisation(None, X, y, X, y)
+    X = df.drop(columns=[target_col])
+    y = df[target_col]
+    X_train, X_test, y_train, y_test = split(X, y)
+    results = modelisation(X, y, X, y)
     seuil = 10
     mae_rf = results["RandomForest"]["MAE"]
     mae_svr = results["SVR"]["MAE"]

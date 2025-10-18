@@ -49,7 +49,7 @@ def best_features(df):
     X_new = selector.fit_transform(X, y)
     selected_features = X.columns[selector.get_support()]
     X_selected = pd.DataFrame(X_new, columns=selected_features)
-    X= df[selected_features.tolist()]
+    X= df[X_selected.tolist()]
     return X,y
 def split(X,y):
 
@@ -60,7 +60,7 @@ def split(X,y):
     )
     return X_train, X_test, y_train, y_test
 
-def modelisation(model, X_train, y_train, X_test, y_test, model_name="Model", pos_label=1):
+def modelisation( X_train, y_train, X_test, y_test):
     rf = RandomForestRegressor(random_state=42)
     svr = SVR()
 
