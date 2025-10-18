@@ -1,19 +1,16 @@
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder,StandardScaler
+from sklearn.feature_selection import SelectKBest, f_regression
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 from sklearn.metrics import mean_absolute_error,r2_score
 
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
-def charg_data(p):
+def charg_data():
 
-    df= pd.read_csv(p)
-    print(df.head())
-    print(df.info())
-    print(df.describe(include='all'))
-    print(df.select_dtypes(include=['object']).columns)
-    return df
+    return pd.read_csv("data_brief_2.csv")
+
 
 def qualite_data(p):
     df=p.copy()
@@ -40,15 +37,21 @@ def scale_numeric(df, features):
     scaler = StandardScaler()
     df[features] = scaler.fit_transform(df[features])
     return df
+def best_features(df):
+    X = df.drop('Delivery_Time_min', axis=1)
+    y = df['Delivery_Time_min']
+    selector = SelectKBest(score_func=f_regression, k=5)
+    X_new = selector.fit_transform(X, y)
+    selected_features = X.columns[selector.get_support()]
+    X_selected = pd.DataFrame(X_new, columns=selected_features)
+    X= df[selected_features.tolist()]
+    return X,y
+def split(X,y):
 
 
-def split(df, target_col='Delivery_Time_min', feature_cols=None, test_size=0.2, random_state=42):
-
-    y = df[target_col]
-    X = df[feature_cols]
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state, stratify=y
+        X, y, test_size=0.2, random_state=42
     )
     return X_train, X_test, y_train, y_test
 
