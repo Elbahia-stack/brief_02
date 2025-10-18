@@ -1,8 +1,10 @@
 import pytest
 import pandas as pd
 from piline import charg_data, qualite_data, encoder_d, scale_numeric, modelisation
+@pytest.fixture
+def charg_data():
 
-
+    return pd.read_csv("data_brief_2.csv")
 
 def test_data_format_and_shape(charg_data):
    assert charg_data.shape==(1000,9)
