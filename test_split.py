@@ -1,19 +1,22 @@
 import pytest
 import pandas as pd
-from piline import charg_data, qualite_data, encoder_d, scale_numeric, modelisation
+from piline import  qualite_data, encoder_d, scale_numeric, modelisation
 @pytest.fixture
-def charg_data():
+def data():
 
     return pd.read_csv("data_brief_2.csv")
 
-def test_data_format_and_shape(charg_data):
-   assert charg_data.shape==(1000,9)
+def test_data_format_and_shape(data):
+   assert data.shape==(1000,9)
 
 
-def test_mae(charg_data):
+def test_mae(data):
+    df = qualite_data(data)
+    df = encoder_d(df)
+    df = scale_numeric(df)
     target_col = 'Delivery_Time_min'
-    X = charg_data.drop(columns=[target_col])
-    y = charg_data[target_col]
+    X = data.drop(columns=[target_col])
+    y = data[target_col]
     results = modelisation(None, X, y, X, y)
     seuil = 10
     mae_rf = results["RandomForest"]["MAE"]
